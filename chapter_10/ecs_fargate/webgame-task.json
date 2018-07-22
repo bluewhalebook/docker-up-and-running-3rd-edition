@@ -1,0 +1,35 @@
+{
+  "taskDefinition": {
+    "containerDefinitions": [
+      {
+        "name": "web-game",
+        "image": "spkane/quantum-game",
+        "cpu": 0,
+        "portMappings": [
+          {
+            "containerPort": 8080,
+            "hostPort": 8080,
+            "protocol": "tcp"
+          }
+        ],
+        "essential": true,
+        "environment": [],
+        "mountPoints": [],
+        "volumesFrom": []
+      }
+    ],
+    "family": "fargate-game",
+    "networkMode": "awsvpc",
+    "volumes": [],
+    "placementConstraints": [],
+    "compatibilities": [
+      "EC2",
+      "FARGATE"
+    ],
+    "requiresCompatibilities": [
+      "FARGATE"
+    ],
+    "cpu": "256",
+    "memory": "512"
+  }
+}

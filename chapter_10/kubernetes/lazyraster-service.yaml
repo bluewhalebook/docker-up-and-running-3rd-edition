@@ -1,0 +1,64 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: lazyraster
+  labels:
+    app: lazyraster
+spec:
+  type: NodePort
+  ports:
+    - port: 8000
+      targetPort: 8000
+      protocol: TCP
+  selector:
+    app: lazyraster
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: cache-data-claim
+  labels:
+    app: lazyraster
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Mi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lazyraster
+  labels:
+    app: lazyraster
+spec:
+  selector:
+    matchLabels:
+      app: lazyraster
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: lazyraster
+    spec:
+      containers:
+      - image: relistan/lazyraster:demo
+        name: lazyraster
+        env:
+        - name: RASTER_RING_TYPE
+          value: memberlist
+        - name: RASTER_BASE_DIR
+          value: /data
+        ports:
+        - containerPort: 8000
+          name: lazyraster
+        volumeMounts:
+        - name: cache-data
+          mountPath: /data
+      volumes:
+      - name: cache-data
+        persistentVolumeClaim:
+          claimName: cache-data-claim
+

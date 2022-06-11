@@ -1,0 +1,42 @@
+puts (<<-EOT)
+  -----------------------------------------------------------------
+  [WARNING] This exposes an unencrypted Docker TCP port on the VM!!
+
+  This is NOT secure and may expose your system to significant risk
+  if left running and exposed to the broader network.
+  -----------------------------------------------------------------
+
+EOT
+
+$script = <<-SCRIPT
+echo \'{"hosts": ["tcp://0.0.0.0:2375", "unix:///var/run/docker.sock"]}\' | \
+sudo tee /etc/docker/daemon.json
+sudo mkdir -p /etc/systemd/system/docker.service.d
+echo -e \"[Service]\nExecStart=\nExecStart=/usr/bin/dockerd\" | \
+sudo tee /etc/systemd/system/docker.service.d/docker.conf
+sudo systemctl daemon-reload
+sudo systemctl restart docker
+SCRIPT
+
+Vagrant.configure(2) do |config|
+
+  # Pick a compatible Vagrantbox
+  config.vm.box = 'bento/ubuntu-20.04'
+
+  # Install Docker if it is not already on the VM image
+  config.vm.provision :docker
+
+  # Configure Docker to listen on an unencrypted local port
+  config.vm.provision "shell",
+    inline: $script,
+    run: "always"
+
+  # Port-forward the Docker port to
+  # 12375 (or another open port) on our host machine
+  config.vm.network "forwarded_port",
+    guest: 2375,
+    host: 12375,
+    protocol: "tcp",
+    auto_correct: true
+
+end

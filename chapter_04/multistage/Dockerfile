@@ -2,9 +2,8 @@
 FROM docker.io/golang:alpine as builder
 
 RUN apk update && \
-Remove multistage Dockerfile
     apk add git && \
-    CGO_ENABLED=0 go install -a -ldflags '-s' github.com/adriaandejonge/helloworld@latest
+    CGO_ENABLED=0 go install -a -ldflags '-s' github.com/spkane/scratch-helloworld@latest
 
 # Production container
 FROM scratch

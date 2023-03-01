@@ -20,7 +20,7 @@ SCRIPT
 
 Vagrant.configure(2) do |config|
 
-  # Pick a compatible Vagrantbox
+  # Pick a compatible Vagrant Box
   config.vm.box = 'bento/ubuntu-20.04'
 
   # Install Docker if it is not already on the VM image
